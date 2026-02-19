@@ -1,0 +1,26 @@
+import Link from 'next/link';
+import Image from 'next/image';
+
+export default function Header() {
+  return (
+    <header className="bg-gray-800 shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center py-4">
+          <div className="flex items-center">
+            <Image src="/logo.png" alt="Colombia Tour Logo" width={50} height={50} />
+            <h1 className="text-2xl font-bold text-white ml-3">ColombiaTour</h1>
+          </div>
+          <nav className="hidden md:flex space-x-8">
+            <Link href="/" className="text-white hover:text-gray-300">Inicio</Link>
+            <Link href="/tours" className="text-white hover:text-gray-300">Tours</Link>
+            <Link href="/about" className="text-white hover:text-gray-300">Acerca de</Link>
+            <Link href="/contact" className="text-white hover:text-gray-300">Mi tiquete</Link>
+          </nav>
+          <div className="md:hidden">
+            <button className="text-white hover:text-gray-300">Menu</button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
