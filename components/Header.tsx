@@ -8,7 +8,7 @@ export default function Header() {
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center">
             <Image src="/logo.png" alt="Colombia Tour Logo" width={50} height={50} />
-            <h1 className="text-2xl font-bold text-white ml-3">ColombiaTour</h1>
+            <h1 className="text-2xl font-bold text-white">ColombiaTour</h1>
           </div>
           <nav className="hidden md:flex space-x-8">
             <Link href="/" className="text-white hover:text-gray-300">Inicio</Link>
@@ -16,9 +16,6 @@ export default function Header() {
             <Link href="/about" className="text-white hover:text-gray-300">Acerca de</Link>
             <Link href="/contact" className="text-white hover:text-gray-300">Mi tiquete</Link>
           </nav>
-          <div className="md:hidden">
-            <button className="text-white hover:text-gray-300">Menu</button>
-          </div>
         </div>
       </div>
     </header>
