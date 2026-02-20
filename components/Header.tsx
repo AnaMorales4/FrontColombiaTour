@@ -26,7 +26,7 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-gray-800 shadow-md">
+    <header className="bg-gray-800 shadow-md fix">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center">
@@ -35,12 +35,12 @@ export default function Header() {
           </div>
           <nav className="hidden md:flex space-x-8">
             <Link href="/" className="text-white hover:text-gray-300">Inicio</Link>
+            { rol === 'cliente' && <Link href="/mis-tiquetes" className="text-white hover:text-gray-300">Mis tiquetes</Link>}
             {rol === 'admin' && <Link href="/tours" className="text-white hover:text-gray-300">Tours</Link>}
             <Link href="/about" className="text-white hover:text-gray-300">Acerca de</Link>
-            {rol ? ( <Link href="/login" onClick={handleLogout} className="text-white hover:text-gray-300">Cerrar Sesión</Link>):(
+            {rol ? ( <Link href="" onClick={handleLogout} className="text-white hover:text-gray-300">Cerrar Sesión</Link>):(
                <Link href="/login" className="text-white hover:text-gray-300">Iniciar Sesión</Link>
             )}
-          
           </nav>
         </div>
       </div>
