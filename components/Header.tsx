@@ -14,7 +14,7 @@ export default function Header() {
             <Link href="/" className="text-white hover:text-gray-300">Inicio</Link>
             <Link href="/tours" className="text-white hover:text-gray-300">Tours</Link>
             <Link href="/about" className="text-white hover:text-gray-300">Acerca de</Link>
-            <Link href="/iniciarsesion" className="text-white hover:text-gray-300">Iniciar Sesion</Link>
+            <Link href="/login" className="text-white hover:text-gray-300">Iniciar Sesión</Link>
           </nav>
         </div>
       </div>
