@@ -1,14 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [nombre, setNombre] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -19,10 +18,10 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const endpoint = isLogin ? '/auth/login' : '/auth/register';
+      const endpoint = isLogin ? '/login' : '/usuarios';
       const payload = isLogin 
-        ? { email, password }
-        : { email, password, confirmPassword };
+        ? { email, contrasena: password }
+        : { email, contrasena: password, nombre};
 
       const response = await fetch(`http://localhost:3333${endpoint}`, {
         method: 'POST',
@@ -36,14 +35,25 @@ export default function LoginPage() {
       }
 
       const data = await response.json();
+
+      if (!isLogin) {
+        if (data.Status) {
+            setIsLogin(true);
+            setEmail('');
+            setPassword('');
+            setNombre('');
+            return
+        }
+      }
       
       // Guardar token si existe
-      if (data.token) {
-        localStorage.setItem('authToken', data.token);
+      if (data.Status) {
+        localStorage.setItem('auth',"true");
+        localStorage.setItem('rol', data.rol);
+        localStorage.setItem('id', data.id);
+        router.push('/');
       }
-
-      // Redirigir a página principal
-      router.push('/');
+      setError(data.message);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido');
     } finally {
@@ -56,7 +66,7 @@ export default function LoginPage() {
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
         {/* Logo/Título */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-blue-600 mb-2">ColombiaTour</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">ColombiaTour</h1>
           <p className="text-gray-600">
             {isLogin ? 'Inicia sesión en tu cuenta' : 'Crea una nueva cuenta'}
           </p>
@@ -64,6 +74,22 @@ export default function LoginPage() {
 
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+            <div>
+              <label htmlFor="nombre" className="block text-sm font-semibold text-gray-700 mb-2">
+                Nombre
+              </label>
+              <input
+                id="nombre"
+                type="text"
+                placeholder="Tu nombre"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+            </div>
+          )}
           {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -95,25 +121,6 @@ export default function LoginPage() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
             />
           </div>
-
-          {/* Confirmar Contraseña (Solo en registro) */}
-          {!isLogin && (
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 mb-2">
-                Confirmar Contraseña
-              </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-              />
-            </div>
-          )}
-
           {/* Mensaje de Error */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">
@@ -125,7 +132,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded-lg transition mb-2"
+            className="w-full bg-gray-800 hover:bg-gray-600 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded-lg transition mb-2"
           >
             {loading ? 'Cargando...' : isLogin ? 'Iniciar Sesión' : 'Registrarse'}
           </button>
@@ -142,9 +149,9 @@ export default function LoginPage() {
               setError(null);
               setEmail('');
               setPassword('');
-              setConfirmPassword('');
+              setNombre('');
             }}
-            className="text-blue-600 hover:text-blue-700 font-semibold text-sm"
+            className="text-gray-800 font-semibold text-sm"
           >
             {isLogin ? 'Registrarse' : 'Iniciar Sesión'}
           </button>
