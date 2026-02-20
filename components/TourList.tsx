@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 interface Tour {
-  id: number;
-  nombre_destino: string;
+  idTour: number;
+  nombreDestino: string;
   descripcion: string;
   precio: number;
   imagen: string;
   estado: boolean;
   cupos_disponibles: number;
-  fecha_tour: string;
+  fechaTour: string;
 }
 
 export default function TourList() {
@@ -43,11 +43,18 @@ export default function TourList() {
     }
   };
 
+  const formatter = new Intl.NumberFormat('es-CO', {
+  style: 'currency',
+  currency: 'COP',
+  minimumFractionDigits: 0, // 1.500.000
+  maximumFractionDigits: 0 
+});
+
   if (loading) {
     return (
       <section className="py-16 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h3 className="text-3xl font-bold text-center mb-12">Tours Destacados</h3>
+          <h3 className="text-3xl font-bold text-center mb-12">Conoce nuestros tours</h3>
           <div className="text-center text-gray-600">
             <p>Cargando tours...</p>
           </div>
@@ -60,7 +67,7 @@ export default function TourList() {
     return (
       <section className="py-16 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h3 className="text-3xl font-bold text-center mb-12">Tours Destacados</h3>
+          <h3 className="text-3xl font-bold text-center mb-12">Conoce nuestros tours</h3>
           <div className="text-center text-gray-600">
             <p>{error || 'No hay tours disponibles en este momento'}</p>
           </div>
@@ -72,31 +79,31 @@ export default function TourList() {
   return (
     <section className="py-16 bg-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h3 className="text-3xl font-bold text-center mb-12">Tours Destacados</h3>
+        <h3 className="text-3xl font-bold text-center mb-12">Conoce nuestros tours</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {tours.map((tour) => (
             <Link 
-              key={tour.id} 
-              href={`/tours/${tour.id}`}
+              key={tour.idTour} 
+              href={`/tours/${tour.idTour}`}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow block"
             >
               {tour.imagen && (
-                <img src={tour.imagen} alt={tour.nombre_destino} className="w-full h-48 object-cover" />
+                <img src={tour.imagen} alt={tour.nombreDestino} className="w-full h-48 object-cover" />
               )}
               <div className="p-6">
-                <h4 className="text-xl font-semibold mb-2">{tour.nombre_destino}</h4>
+                <h4 className="text-xl font-semibold mb-2">{tour.nombreDestino}</h4>
                 <p className="text-gray-600 mb-4">{tour.descripcion}</p>
                 <div className="mb-4 text-sm text-gray-500">
-                  <p>Fecha: {tour.fecha_tour ? new Date(tour.fecha_tour).toLocaleDateString('en-US') : 'N/A'}</p>
+                  <p>Fecha: {tour.fechaTour ? new Date(tour.fechaTour).toLocaleDateString('en-US') : 'N/A'}</p>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-2xl font-bold text-blue-600">${tour.precio}</span>
+                  <span className="text-2xl font-bold text-gray-800">{formatter.format(tour.precio)}</span>
                   <button 
                     onClick={(e) => {
                       e.preventDefault();
                       // Aquí puedes agregar lógica de reserva
                     }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+                    className="bg-gray-800 hover:bg-gray-600 text-white py-2 px-4 rounded"
                   >
                     Reservar
                   </button>

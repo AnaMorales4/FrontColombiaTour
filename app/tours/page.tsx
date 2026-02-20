@@ -1,25 +1,24 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+"use client";
+import { useState, useEffect } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 interface Tour {
-  id: number;
-  nombre_destino: string;
+  idTour: number;
+  nombreDestino: string;
   descripcion: string;
   precio: string;
   estado: boolean;
-  cupos_disponibles?: number;
+  cuposDisponibles?: number;
   imagen?: string;
-  fecha_tour?: string;
+  fechaTour?: string;
 }
 
 export default function ToursPage() {
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingidTour, setEditingidTour] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Tour | null>(null);
 
   useEffect(() => {
@@ -29,29 +28,31 @@ export default function ToursPage() {
   const fetchTours = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3333/tours');
+      const response = await fetch(
+        "http://localhost:3333/tours?page=1&limit=100",
+      );
       if (!response.ok) {
-        throw new Error('Error al cargar los tours');
+        throw new Error("Error al cargar los tours");
       }
       const data = await response.json();
       setTours(data.data || data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
-      console.error('Error fetching tours:', err);
+      setError(err instanceof Error ? err.message : "Error desconocidTouro");
+      console.error("Error fetching tours:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleToggleActive = async (id: number) => {
-    const tour = tours.find(t => t.id === id);
+  const handleToggleActive = async (idTour: number) => {
+    const tour = tours.find((t) => t.idTour === idTour);
     if (!tour) return;
 
     try {
-      const response = await fetch(`http://localhost:3333/tours/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch(`http://localhost:3333/tours/${idTour}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...tour,
           estado: !tour.estado,
@@ -59,20 +60,22 @@ export default function ToursPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Error al actualizar el tour');
+        throw new Error("Error al actualizar el tour");
       }
 
-      setTours(tours.map(t => 
-        t.id === id ? { ...t, estado: !t.estado } : t
-      ));
+      setTours(
+        tours.map((t) =>
+          t.idTour === idTour ? { ...t, estado: !t.estado } : t,
+        ),
+      );
     } catch (err) {
-      console.error('Error updating tour:', err);
-      alert('Error al actualizar el estado del tour');
+      console.error("Error updating tour:", err);
+      alert("Error al actualizar el estado del tour");
     }
   };
 
   const handleEdit = (tour: Tour) => {
-    setEditingId(tour.id);
+    setEditingidTour(tour.idTour);
     setEditForm({ ...tour });
   };
 
@@ -80,60 +83,85 @@ export default function ToursPage() {
     if (!editForm) return;
 
     try {
-      const response = await fetch(`http://localhost:3333/tours/${editForm.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editForm),
-      });
+      const response = await fetch(
+        `http://localhost:3333/tours/${editForm.idTour}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(editForm),
+        },
+      );
 
       if (!response.ok) {
-        throw new Error('Error al guardar los cambios');
+        throw new Error("Error al guardar los cambios");
       }
 
-      setTours(tours.map(tour => 
-        tour.id === editForm.id ? editForm : tour
-      ));
-      setEditingId(null);
+      setTours(
+        tours.map((tour) =>
+          tour.idTour === editForm.idTour ? editForm : tour,
+        ),
+      );
+      setEditingidTour(null);
       setEditForm(null);
     } catch (err) {
-      console.error('Error saving tour:', err);
-      alert('Error al guardar los cambios');
+      console.error("Error saving tour:", err);
+      alert("Error al guardar los cambios");
     }
   };
 
   const handleCancelEdit = () => {
-    setEditingId(null);
+    setEditingidTour(null);
     setEditForm(null);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar este tour?')) {
+  const handleDelete = async (idTour: number) => {
+    if (!confirm("¿Estás seguro de que quieres eliminar este tour?")) {
       return;
     }
 
     try {
-      const response = await fetch(`http://localhost:3333/tours/${id}`, {
-        method: 'DELETE',
+      const response = await fetch(`http://localhost:3333/tours/${idTour}`, {
+        method: "DELETE",
       });
 
       if (!response.ok) {
-        throw new Error('Error al eliminar el tour');
+        throw new Error("Error al eliminar el tour");
       }
 
-      setTours(tours.filter(tour => tour.id !== id));
+      setTours(tours.filter((tour) => tour.idTour !== idTour));
     } catch (err) {
-      console.error('Error deleting tour:', err);
-      alert('Error al eliminar el tour');
+      console.error("Error deleting tour:", err);
+      alert("Error al eliminar el tour");
     }
   };
 
+  const formatter = new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0, // 1.500.000
+    maximumFractionDigits: 0,
+  });
+
+
+  const formatDate = (dateString: string) => {
+    if (dateString.includes("T")) {
+      const [year, month, day] = dateString.split("T")[0].split("-");
+      return `${year}-${month}-${day}`;
+    }
+    return dateString;
+  }
+
+    console.log(formatDate(editForm?.fechaTour || ""));
+  
   return (
     <>
       <Header />
       <main className="min-h-screen bg-gray-50 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Gestión de Tours</h1>
-          
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">
+            Gestión de Tours
+          </h1>
+
           {loading && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
               <p className="text-blue-800 font-semibold">Cargando tours...</p>
@@ -143,7 +171,7 @@ export default function ToursPage() {
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center mb-8">
               <p className="text-red-800 font-semibold">{error}</p>
-              <button 
+              <button
                 onClick={fetchTours}
                 className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
               >
@@ -153,54 +181,90 @@ export default function ToursPage() {
           )}
 
           {!loading && !error && (
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="bg-white rounded-lg shadow-md overflow-hidTourden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-100 border-b">
                     <tr>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Imagen</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Destino</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Descripción</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Precio</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Cupos</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Fecha</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Estado</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Acciones</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                        Imagen
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                        Destino
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                        Descripción
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                        Precio
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                        Cupos
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                        Fecha
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                        Estado
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                        Acciones
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {tours.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                        <td
+                          colSpan={6}
+                          className="px-6 py-8 text-center text-gray-500"
+                        >
                           No hay tours disponibles
                         </td>
                       </tr>
                     ) : (
                       tours.map((tour) => (
-                        <tr key={tour.id} className="border-b hover:bg-gray-50">
+                        <tr
+                          key={tour.idTour}
+                          className="border-b hover:bg-gray-50"
+                        >
                           <td className="px-6 py-4 text-sm">
                             {tour.imagen && (
-                              <img src={tour.imagen} alt={tour.nombre_destino} className="w-16 h-16 object-cover rounded" />
+                              <img
+                                src={tour.imagen}
+                                alt={tour.nombreDestino}
+                                className="w-16 h-16 object-cover rounded"
+                              />
                             )}
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-900">
-                            {editingId === tour.id ? (
+                            {editingidTour === tour.idTour ? (
                               <input
                                 type="text"
-                                value={editForm?.nombre_destino || ''}
-                                onChange={(e) => setEditForm({ ...editForm!, nombre_destino: e.target.value })}
+                                value={editForm?.nombreDestino || ""}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm!,
+                                    nombreDestino: e.target.value,
+                                  })
+                                }
                                 className="border rounded px-2 py-1 w-full"
                               />
                             ) : (
-                              tour.nombre_destino
+                              tour.nombreDestino
                             )}
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-600">
-                            {editingId === tour.id ? (
+                            {editingidTour === tour.idTour ? (
                               <input
                                 type="text"
-                                value={editForm?.descripcion || ''}
-                                onChange={(e) => setEditForm({ ...editForm!, descripcion: e.target.value })}
+                                value={editForm?.descripcion || ""}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm!,
+                                    descripcion: e.target.value,
+                                  })
+                                }
                                 className="border rounded px-2 py-1 w-full"
                               />
                             ) : (
@@ -208,83 +272,154 @@ export default function ToursPage() {
                             )}
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-900">
-                            {editingId === tour.id ? (
+                            {editingidTour === tour.idTour ? (
                               <input
                                 type="text"
-                                value={editForm?.precio || ''}
-                                onChange={(e) => setEditForm({ ...editForm!, precio: e.target.value })}
+                                value={editForm?.precio || ""}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm!,
+                                    precio: e.target.value,
+                                  })
+                                }
                                 className="border rounded px-2 py-1 w-full"
                               />
                             ) : (
-                              tour.precio
+                              formatter.format(Number(tour.precio))
                             )}
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-900">
-                            {editingId === tour.id ? (
+                            {editingidTour === tour.idTour ? (
                               <input
                                 type="number"
-                                value={editForm?.cupos_disponibles || ''}
-                                onChange={(e) => setEditForm({ ...editForm!, cupos_disponibles: parseInt(e.target.value) || 0 })}
+                                value={editForm?.cuposDisponibles || ""}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm!,
+                                    cuposDisponibles:
+                                      parseInt(e.target.value) || 0,
+                                  })
+                                }
                                 className="border rounded px-2 py-1 w-full"
                               />
                             ) : (
-                              tour.cupos_disponibles || 0
+                              tour.cuposDisponibles || 0
                             )}
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-900">
-                            {editingId === tour.id ? (
+                            {editingidTour === tour.idTour ? (
                               <input
                                 type="date"
-                                value={editForm?.fecha_tour || ''}
-                                onChange={(e) => setEditForm({ ...editForm!, fecha_tour: e.target.value })}
+                                value={editForm?.fechaTour? formatDate(editForm?.fechaTour) : ""}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm!,
+                                    fechaTour: e.target.value,
+                                  })
+                                }
                                 className="border rounded px-2 py-1 w-full"
                               />
+                            ) : tour.fechaTour ? (
+                              new Date(tour.fechaTour).toLocaleDateString(
+                                "es-ES",
+                              )
                             ) : (
-                              tour.fecha_tour ? new Date(tour.fecha_tour).toLocaleDateString('es-ES') : 'N/A'
+                              "N/A"
                             )}
                           </td>
                           <td className="px-6 py-4 text-sm">
                             <button
-                              onClick={() => handleToggleActive(tour.id)}
-                              disabled={editingId === tour.id}
+                              onClick={() => handleToggleActive(tour.idTour)}
+                              disabled={editingidTour === tour.idTour}
                               className={`px-3 py-1 rounded font-semibold text-white ${
                                 tour.estado
-                                  ? 'bg-green-600 hover:bg-green-700'
-                                  : 'bg-red-600 hover:bg-red-700'
+                                  ? "bg-green-600 hover:bg-green-700"
+                                  : "bg-red-600 hover:bg-red-700"
                               } disabled:opacity-50`}
                             >
-                              {tour.estado ? 'Activo' : 'Inactivo'}
+                              {tour.estado ? "Activo" : "Inactivo"}
                             </button>
                           </td>
-                          <td className="px-6 py-4 text-sm space-x-2">
-                            {editingId === tour.id ? (
+                          <td className="px-6 py-4 text-sm space-x-2 flex items-center">
+                            {editingidTour === tour.idTour ? (
                               <>
                                 <button
+                                  className="flex items-center gap-2 px-2 py-2 text-gray-600 rounded-md hover:bg-green-600 transition"
                                   onClick={handleSaveEdit}
-                                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded font-semibold"
                                 >
-                                  Guardar
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                    className="w-5 h-5"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                                    />
+                                  </svg>
                                 </button>
                                 <button
+                                  className="p-1 rounded-full bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600 transition-all"
                                   onClick={handleCancelEdit}
-                                  className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded font-semibold"
                                 >
-                                  Cancelar
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path
+                                      fill-rule="evenodd"
+                                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                      clip-rule="evenodd"
+                                    />
+                                  </svg>
                                 </button>
                               </>
                             ) : (
                               <>
                                 <button
+                                  className="flex items-center p-2 rounded-full hover:bg-gray-100"
                                   onClick={() => handleEdit(tour)}
-                                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded font-semibold"
                                 >
-                                  Editar
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                    className="size-6 text-gray-600 hover:text-blue-600"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                                    />
+                                  </svg>
                                 </button>
                                 <button
-                                  onClick={() => handleDelete(tour.id)}
-                                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-semibold"
+                                  type="button"
+                                  className="inline-flex items-center p-2 text-sm font-medium text-center text-red-600 rounded-full hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                  onClick={() => handleDelete(tour.idTour)}
                                 >
-                                  Eliminar
+                                  <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                    ></path>
+                                  </svg>
                                 </button>
                               </>
                             )}
