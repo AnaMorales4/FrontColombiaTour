@@ -29,7 +29,7 @@ export default function ToursPage() {
     try {
       setLoading(true);
       const response = await fetch(
-        "http://localhost:3333/tours?page=1&limit=100",
+        "https://bcolombiatour.fly.dev/tours?page=1&limit=100",
       );
       if (!response.ok) {
         throw new Error("Error al cargar los tours");
@@ -50,7 +50,7 @@ export default function ToursPage() {
     if (!tour) return;
 
     try {
-      const response = await fetch(`http://localhost:3333/tours/${idTour}`, {
+      const response = await fetch(`https://bcolombiatour.fly.dev/tours/${idTour}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -84,7 +84,7 @@ export default function ToursPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:3333/tours/${editForm.idTour}`,
+        `https://bcolombiatour.fly.dev/tours/${editForm.idTour}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -120,7 +120,7 @@ export default function ToursPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3333/tours/${idTour}`, {
+      const response = await fetch(`https://bcolombiatour.fly.dev/tours/${idTour}`, {
         method: "DELETE",
       });
 

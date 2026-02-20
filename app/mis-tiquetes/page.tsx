@@ -41,7 +41,7 @@ export default function MisTiquetes() {
       if (!usuarioId) {
         throw new Error('Usuario no autenticado');
       }
-      const response = await fetch(`http://localhost:3333/misTiquetes/${usuarioId}`);
+      const response = await fetch(`https://bcolombiatour.fly.dev/misTiquetes/${usuarioId}`);
       if (!response.ok) {
         throw new Error('Error al cargar los tiquetes');
       }
@@ -66,7 +66,7 @@ export default function MisTiquetes() {
     const handleCantPersonasChange = async (idTiquete: number, newCantPersonas: number) => {  
 
         try {
-          const response = await fetch(`http://localhost:3333/tiquetes/${idTiquete}`, {
+          const response = await fetch(`https://bcolombiatour.fly.dev/tiquetes/${idTiquete}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ cant_personas: newCantPersonas }),

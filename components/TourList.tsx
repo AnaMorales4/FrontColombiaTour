@@ -40,7 +40,7 @@ export default function TourList() {
   const fetchTours = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3333/tours?limit=100');
+      const response = await fetch('https://bcolombiatour.fly.dev/tours?limit=100');
       if (!response.ok) {
         throw new Error('Error al cargar los tours');
       }
@@ -108,7 +108,7 @@ export default function TourList() {
 
     try {
       // Aquí iría la llamada al backend para procesar la compra
-      const response = await fetch('http://localhost:3333/tiquetes', {
+      const response = await fetch('https://bcolombiatour.fly.dev/tiquetes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ export default function TourList() {
         if (typeof window !== 'undefined') {
             const auth = localStorage.getItem('auth');
             if (auth === 'true') {
-              const response = await fetch(`http://localhost:3333/usuarios/${localStorage.getItem('id')}`, {
+              const response = await fetch(`https://bcolombiatour.fly.dev/usuarios/${localStorage.getItem('id')}`, {
                 method: 'GET',
                 headers: {'Content-Type': 'application/json'}
               });
