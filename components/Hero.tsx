@@ -7,9 +7,11 @@ export default function Hero() {
         <div>
           <h2 className="text-4xl md:text-6xl font-bold mb-4">Conoce los lugares más emblematicos</h2>
           <p className="text-xl md:text-2xl mb-8">Descubre Colombia, crea recuerdos</p>
-          <Link href="/tours" className="bg-gray-800 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded inline-block">
-            Explorar Tours
-          </Link>
+          <div className="flex gap-4 justify-center">
+            <Link href="/tours" className="bg-gray-800 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded inline-block">
+              Explorar Tours
+            </Link>
+          </div>
         </div>
       </div>
     </section>
