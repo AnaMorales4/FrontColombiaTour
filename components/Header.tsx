@@ -35,7 +35,7 @@ export default function Header() {
           </div>
           <nav className="hidden md:flex space-x-8">
             <Link href="/" className="text-white hover:text-gray-300">Inicio</Link>
-            { rol === 'cliente' && <Link href="/mis-tiquetes" className="text-white hover:text-gray-300">Mis tiquetes</Link>}
+            <Link href="/mis-tiquetes" className="text-white hover:text-gray-300">Mis tiquetes</Link>
             {rol === 'admin' && <Link href="/tours" className="text-white hover:text-gray-300">Tours</Link>}
             <Link href="/about" className="text-white hover:text-gray-300">Acerca de</Link>
             {rol ? ( <Link href="" onClick={handleLogout} className="text-white hover:text-gray-300">Cerrar Sesión</Link>):(
