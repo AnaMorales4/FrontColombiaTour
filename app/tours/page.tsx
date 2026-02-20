@@ -20,6 +20,16 @@ export default function ToursPage() {
   const [error, setError] = useState<string | null>(null);
   const [editingidTour, setEditingidTour] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Tour | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createForm, setCreateForm] = useState<Partial<Tour>>({
+    nombreDestino: "",
+    descripcion: "",
+    precio: "",
+    estado: true,
+    cuposDisponibles: 0,
+    imagen: "",
+    fechaTour: "",
+  });
 
   useEffect(() => {
     fetchTours();
@@ -88,7 +98,13 @@ export default function ToursPage() {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(editForm),
+          body: JSON.stringify({
+          nombre_destino: editForm.nombreDestino,
+          descripcion: editForm.descripcion,
+          precio: editForm.precio,
+          cupos_disponibles: editForm.cuposDisponibles || 0,
+          fecha_tour: editForm.fechaTour,
+        }),
         },
       );
 
@@ -135,33 +151,87 @@ export default function ToursPage() {
     }
   };
 
+  const handleCreateTour = async () => {
+    if (!createForm.nombreDestino || !createForm.descripcion || !createForm.precio) {
+      alert("Por favor completa los campos obligatorios");
+      return;
+    }
+
+    try {
+      const response = await fetch("https://bcolombiatour.fly.dev/tours", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre_destino: createForm.nombreDestino,
+          descripcion: createForm.descripcion,
+          precio: createForm.precio,
+          estado: createForm.estado,
+          cupos_disponibles: createForm.cuposDisponibles || 0,
+          imagen: createForm.imagen,
+          fecha_tour: createForm.fechaTour,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al crear el tour");
+      }
+
+      const newTour = await response.json();
+      setTours([...tours, newTour]);
+      setIsCreateModalOpen(false);
+      setCreateForm({
+        nombreDestino: "",
+        descripcion: "",
+        precio: "",
+        estado: true,
+        cuposDisponibles: 0,
+        imagen: "",
+        fechaTour: "",
+      });
+      alert("Tour creado exitosamente");
+    } catch (err) {
+      console.error("Error creating tour:", err);
+      alert("Error al crear el tour");
+    }
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
+    setCreateForm({
+      nombreDestino: "",
+      descripcion: "",
+      precio: "",
+      estado: true,
+      cuposDisponibles: 0,
+      imagen: "",
+      fechaTour: "",
+    });
+  };
+
   const formatter = new Intl.NumberFormat("es-CO", {
     style: "currency",
     currency: "COP",
-    minimumFractionDigits: 0, // 1.500.000
+    minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
 
 
-  const formatDate = (dateString: string) => {
-    if (dateString.includes("T")) {
-      const [year, month, day] = dateString.split("T")[0].split("-");
-      return `${year}-${month}-${day}`;
-    }
-    return dateString;
-  }
-
-    console.log(formatDate(editForm?.fechaTour || ""));
-  
   return (
     <>
       <Header />
       <main className="min-h-screen bg-gray-50 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">
-            Gestión de Tours
-          </h1>
-
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Gestión de Tours
+            </h1>
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="bg-gray-800 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition"
+            >
+             Crear Tour
+            </button>
+          </div>
           {loading && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
               <p className="text-blue-800 font-semibold">Cargando tours...</p>
@@ -256,17 +326,24 @@ export default function ToursPage() {
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-600">
                             {editingidTour === tour.idTour ? (
-                              <input
-                                type="text"
-                                value={editForm?.descripcion || ""}
-                                onChange={(e) =>
-                                  setEditForm({
-                                    ...editForm!,
-                                    descripcion: e.target.value,
-                                  })
-                                }
-                                className="border rounded px-2 py-1 w-full"
-                              />
+                              <div>
+                                <input
+                                  type="text"
+                                  value={editForm?.descripcion || ""}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value.length <= 130) {
+                                      setEditForm({
+                                        ...editForm!,
+                                        descripcion: value,
+                                      });
+                                    }
+                                  }}
+                                  maxLength={130}
+                                  className="border rounded px-2 py-1 w-full"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">({(editForm?.descripcion || "").length}/130)</p>
+                              </div>
                             ) : (
                               tour.descripcion
                             )}
@@ -309,20 +386,22 @@ export default function ToursPage() {
                           <td className="px-6 py-4 text-sm text-gray-900">
                             {editingidTour === tour.idTour ? (
                               <input
-                                type="date"
-                                value={editForm?.fechaTour? formatDate(editForm?.fechaTour) : ""}
-                                onChange={(e) =>
+                                type="text"
+                                value={editForm?.fechaTour || ""}
+                                onChange={(e) => {
+                                  const value = e.target.value;
                                   setEditForm({
                                     ...editForm!,
-                                    fechaTour: e.target.value,
-                                  })
-                                }
+                                    fechaTour: value,
+                                  });
+                                }}
+                                placeholder="MM/DD/YYYY"
                                 className="border rounded px-2 py-1 w-full"
                               />
                             ) : tour.fechaTour ? (
-                              new Date(tour.fechaTour).toLocaleDateString(
+                                 new Date(tour.fechaTour).toLocaleDateString(
                                 "es-ES",
-                              )
+                                 )
                             ) : (
                               "N/A"
                             )}
@@ -433,6 +512,150 @@ export default function ToursPage() {
             </div>
           )}
         </div>
+
+        {/* Modal de Crear Tour */}
+        {isCreateModalOpen && (
+          <div className="fixed inset-0 bg-[#00000080] bg-opacity-0 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6 max-h-screen overflow-y-auto">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Crear Nuevo Tour</h2>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Nombre Destino *
+                  </label>
+                  <input
+                    type="text"
+                    value={createForm.nombreDestino || ""}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, nombreDestino: e.target.value })
+                    }
+                    placeholder="Ej: San Andrés"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Descripción * ({(createForm.descripcion || "").length}/130)
+                  </label>
+                  <textarea
+                    value={createForm.descripcion || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value.length <= 130) {
+                        setCreateForm({ ...createForm, descripcion: value });
+                      }
+                    }}
+                    maxLength={130}
+                    placeholder="Describe el tour"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 h-24 resize-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Precio *
+                    </label>
+                    <input
+                      type="text"
+                      value={createForm.precio || ""}
+                      onChange={(e) =>
+                        setCreateForm({ ...createForm, precio: e.target.value })
+                      }
+                      placeholder="Ej: 1800000"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Cupos Disponibles
+                    </label>
+                    <input
+                      type="number"
+                      value={createForm.cuposDisponibles || 0}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          cuposDisponibles: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      placeholder="0"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Imagen (URL)
+                  </label>
+                  <input
+                    type="url"
+                    value={createForm.imagen || ""}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, imagen: e.target.value })
+                    }
+                    placeholder="https://ejemplo.com/imagen.jpg"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Fecha del Tour
+                  </label>
+                  <input
+                    type="text"
+                    value={createForm.fechaTour || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setCreateForm({ ...createForm, fechaTour: value });
+                    }}
+                    placeholder="MM/DD/YYYY"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Estado
+                  </label>
+                  <select
+                    value={createForm.estado ? "activo" : "inactivo"}
+                    onChange={(e) =>
+                      setCreateForm({
+                        ...createForm,
+                        estado: e.target.value === "activo",
+                      })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800"
+                  >
+                    <option value="activo">Activo</option>
+                    <option value="inactivo">Inactivo</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-8">
+                <button
+                  onClick={handleCloseCreateModal}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-semibold"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleCreateTour}
+                  className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-600 text-white rounded-lg font-semibold"
+                >
+                  Crear Tour
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
       <Footer />
     </>

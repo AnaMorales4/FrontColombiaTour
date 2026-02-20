@@ -46,7 +46,7 @@ export default function TourList() {
       }
       const data = await response.json();
       // Obtener solo los tours activos 
-      const activeTours = (data.data || data);
+      const activeTours = (data.data || data).filter((tour: Tour) => tour.estado === true);
       setTours(activeTours);
       setError(null);
     } catch (err) {
