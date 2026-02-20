@@ -66,7 +66,6 @@ export default function TourList() {
 
   const abrirModal = (tour: Tour) => {
     setTourSeleccionado(tour);
-    //setFormCompra({ nombre: '', email: '', cantidadPersonas: 1 });
     setModalAbierto(true);
   };
 
@@ -103,11 +102,8 @@ export default function TourList() {
       alert(`Solo hay ${tourSeleccionado.cuposDisponibles} cupos disponibles`);
       return;
     }
-
     setProcesandoCompra(true);
-
     try {
-      // Aquí iría la llamada al backend para procesar la compra
       const response = await fetch('https://bcolombiatour.fly.dev/tiquetes', {
         method: 'POST',
         headers: {
@@ -127,7 +123,6 @@ export default function TourList() {
       alert('¡Compra realizada exitosamente!');
       cerrarModal();
       fetchTours();
-      // Aquí podrías redirigir a una página de confirmación
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Error al procesar la compra');
       console.error('Error en compra:', err);
@@ -135,9 +130,6 @@ export default function TourList() {
       setProcesandoCompra(false);
     }
   };
-
-  //fincion para capturar el click y ver si tengo session y traer la infoormacion del usuaio con un get
-
 
   const handleClick = async (tour:Tour) => {
         if (typeof window !== 'undefined') {
@@ -147,8 +139,6 @@ export default function TourList() {
                 method: 'GET',
                 headers: {'Content-Type': 'application/json'}
               });
-
-                    
             if (!response.ok) {
               const errorData = await response.json();
               throw new Error(errorData.message || 'Error al obtener información del usuario');
@@ -169,8 +159,6 @@ export default function TourList() {
             }
           }   
   }
-
-
 
   if (loading) {
     return (
@@ -215,8 +203,11 @@ export default function TourList() {
               <div className="p-6">
                 <h4 className="text-xl font-semibold mb-2">{tour.nombreDestino}</h4>
                 <p className="text-gray-600 mb-4">{tour.descripcion}</p>
-                <div className="mb-4 text-sm text-gray-500">
+                <div className="block text-sm font-medium text-gray-700 mb-1">
                   <p>Fecha: {tour.fechaTour ? new Date(tour.fechaTour).toLocaleDateString('en-US') : 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="block text-sm font-medium text-gray-700 mb-1">Cupos disponibles: {tour.cuposDisponibles}</p>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-2xl font-bold text-gray-800">{formatter.format(tour.precio)}</span>
@@ -235,10 +226,10 @@ export default function TourList() {
 
       {/* Modal de Compra */}
       {modalAbierto && tourSeleccionado && (
-        <div className="fixed inset-0 bg-[#00000030] bg-opacity-0 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-[#00000080] bg-opacity-0 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold mb-4">Compra de Tiquete</h2>
-            <p className="text-gray-600 mb-4">{tourSeleccionado.nombreDestino}</p>
+            <h1 className="text-xl font-semibold mb-2">{tourSeleccionado.nombreDestino}</h1>
 
             {/* Campos del formulario */}
             <div className="space-y-4 mb-6">
@@ -283,9 +274,10 @@ export default function TourList() {
                   onChange={handleInputChange}
                   min="1"
                   max={tourSeleccionado.cuposDisponibles}
+                  maxLength={2}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800"
                 />
-                <p className="text-xs text-gray-500 mt-1">Cupos disponibles: {tourSeleccionado.cuposDisponibles}</p>
+                <p className="block text-sm font-medium text-gray-700 mb-1">Cupos disponibles: {tourSeleccionado.cuposDisponibles}</p>
               </div>
             </div>
 

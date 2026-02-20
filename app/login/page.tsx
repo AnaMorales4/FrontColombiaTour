@@ -62,15 +62,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center px-4">
+    <div 
+      className="min-h-screen bg-cover bg-center flex items-center justify-center px-4"
+      style={{
+        backgroundImage: 'url(/collagedesvanecido.jpg)',
+      }}
+    >
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
         {/* Logo/Título */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">ColombiaTour</h1>
-          <p className="text-gray-600">
-            {isLogin ? 'Inicia sesión en tu cuenta' : 'Crea una nueva cuenta'}
-          </p>
+        <div className="text-center mb-8 flex items-center justify-center gap-3">
+          <h1 className="text-3xl font-bold text-gray-800">ColombiaTour</h1>
         </div>
+        <p className="text-center text-gray-600 mb-6">
+          {isLogin ? 'Inicia sesión en tu cuenta' : 'Crea una nueva cuenta'}
+        </p>
 
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="space-y-4">
