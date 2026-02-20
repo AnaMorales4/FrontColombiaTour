@@ -139,7 +139,7 @@ export default function TourList() {
   //fincion para capturar el click y ver si tengo session y traer la infoormacion del usuaio con un get
 
 
-  const handleClick = async (tour) => {
+  const handleClick = async (tour:Tour) => {
         if (typeof window !== 'undefined') {
             const auth = localStorage.getItem('auth');
             if (auth === 'true') {
