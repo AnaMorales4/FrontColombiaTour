@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FrontColombiaTour
 
-## Getting Started
+Aplicación web desarrollada con Next.js y React para la gestión y reserva de tours en Colombia.
 
-First, run the development server:
+## Instalación y ejecución
 
-```bash
+1. Clonar el repositorio:
+
+git clone https://github.com/AnaMorales4/FrontColombiaTour.git
+
+2. Ingresar al directorio del proyecto:
+
+cd FrontColombiaTour
+
+3. Instalar dependencias:
+
+npm install
+
+4. Ejecutar el proyecto en modo desarrollo:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La aplicación estará disponible en:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+## Tecnologías utilizadas
 
-To learn more about Next.js, take a look at the following resources:
+- Next.js
+- React
+- TypeScript
+- JavaScript
+- CSS
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Proceso de desarrollo y decisiones tomadas
 
-## Deploy on Vercel
+### 1. Desarrollo del Home
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+El desarrollo del proyecto comenzó con el diseño del HomePage. Inicialmente estructuré los componentes principales:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Header  
+- Hero  
+- Footer  
+
+Decidí comenzar por esta sección porque es el punto de entrada principal del usuario.
+
+Posteriormente, implementé la funcionalidad para listar y mostrar los tours disponibles directamente en el Home.
+- TourList
+
+Desde esta vista el usuario puede iniciar el proceso de reserva.
+
+Cuando se presiona el botón de reserva, se abre un modal que contiene el formulario de compra. Se tomó la decisión de utilizar un modal para evitar redireccionamientos innecesarios y mantener una experiencia de usuario más fluida.
+
+### 2. Página de lista de tours
+
+Después del Home, desarrollé la página donde el rol administrador puede visualizar todos los tours disponibles en el sistema.
+
+En esta sección se permite:
+
+- Crear nuevos tours  
+- Editar tours existentes  
+- Eliminar tours  
+
+Esta vista está orientada a la gestión de los tours y permite realizar operaciones CRUD.
+
+### 3. Autenticación y segmentación por rol
+
+Luego diseñé las páginas de login y registro con el objetivo de segmentar el acceso por roles.
+
+Cuando un usuario se registra, automáticamente se le asigna el rol de cliente.
+
+Un usuario con rol cliente solo puede acceder a:
+
+- Home  
+- Acerca de  
+- Mis tiquetes  
+- Inicio de sesión  
+
+Se implemento que para poder comprar un tour es obligatorio tener la sesión iniciada. Esto con el fin de tarer la información del usuario al formulario de compra.
+
+### 4. Página "Mis tiquetes"
+
+En esta sección el usuario autenticado puede visualizar los tours que ha reservado. Esta información está asociada directamente al usuario que inició sesión, y en esta solo puede editar la cantidad de cupos que desea para el tour.
+
+### 5. Página "Acerca de"
+
+Finalmente, diseñé la página "Acerca de", donde se presenta información general sobre la empresa y su propósito.
+
+## Decisiones técnicas
+
+- Se utilizó Next.js por su sistema de enrutamiento basado en archivos y su optimización para aplicaciones modernas.
+- Se trabajó con componentes reutilizables para mantener una estructura organizada.
+- Se implementó control de acceso basado en roles.
+- Se priorizó la experiencia de usuario mediante el uso de modales y restricciones de acceso según autenticación.
+
+## Funcionalidades principales
+
+- Visualización de tours
+- Reserva de tours mediante formulario en modal
+- Registro y login de usuarios
+- Segmentación por rol
+- CRUD de tours
+- Visualización de tiquetes asociados al usuario
+- Página informativa de la empresa
