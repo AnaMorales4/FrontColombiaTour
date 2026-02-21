@@ -95,6 +95,22 @@ Finalmente, diseñé la página "Acerca de", donde se presenta información gene
 - Se implementó control de acceso basado en roles.
 - Se priorizó la experiencia de usuario mediante el uso de modales y restricciones de acceso según autenticación.
 
+## Despliegue
+
+La aplicación fue desplegada utilizando Vercel, plataforma que permite realizar despliegues automáticos para proyectos desarrollados con Next.js.
+
+El proyecto está conectado al repositorio de GitHub, lo que permite que cada cambio en la rama principal genere automáticamente un nuevo despliegue.
+
+Enlace de la aplicación desplegada:
+
+https://front-colombia-tour-ik6wn8287-anamorales4s-projects.vercel.app
+
+Para el despliegue se tuvo en cuenta:
+
+- Configuración automática detectada por Vercel para proyectos Next.js.
+- Instalación de dependencias mediante `npm install`.
+- Generación automática del entorno de producción.
+
 ## Funcionalidades principales
 
 - Visualización de tours
