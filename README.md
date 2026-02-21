@@ -103,7 +103,7 @@ El proyecto está conectado al repositorio de GitHub, lo que permite que cada ca
 
 Enlace de la aplicación desplegada:
 
-https://front-colombia-tour-ik6wn8287-anamorales4s-projects.vercel.app
+https://front-colombia-tour.vercel.app/
 
 Para el despliegue se tuvo en cuenta:
 
@@ -120,3 +120,15 @@ Para el despliegue se tuvo en cuenta:
 - CRUD de tours
 - Visualización de tiquetes asociados al usuario
 - Página informativa de la empresa
+
+## Usuarios de prueba
+### Rol Administrador
+
+- correo: admin@admin.com
+- Contraseña:12345678
+
+### Rol Cliente
+
+-- correo: camilop@gmail.com
+- Contraseña:12345a
+
